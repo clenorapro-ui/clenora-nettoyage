@@ -148,23 +148,62 @@
     });
   }
 
-  /* ----------  Formulaire de devis (démo)  ---------- */
+  /* ----------  Formulaire de devis (envoi réel via FormSubmit)  ----------
+     Les demandes sont envoyées par e-mail à l'adresse ci-dessous.
+     Pour changer la destination, modifiez FORM_ENDPOINT. */
+  var FORM_ENDPOINT = "https://formsubmit.co/ajax/clenora.pro@gmail.com";
   var form = document.getElementById("quoteForm");
   var success = document.getElementById("formSuccess");
+  var errorBox = document.getElementById("formError");
   if (form) {
+    var submitBtn = form.querySelector('button[type="submit"]');
     form.addEventListener("submit", function (e) {
       e.preventDefault();
-      // Validation simple
       if (!form.checkValidity()) {
         form.reportValidity();
         return;
       }
-      // 👉 Branchez ici votre envoi réel (fetch vers votre API / service e-mail).
-      if (success) success.classList.add("show");
-      form.reset();
-      setTimeout(function () {
-        if (success) success.classList.remove("show");
-      }, 6000);
+      if (success) success.classList.remove("show");
+      if (errorBox) errorBox.classList.remove("show");
+
+      var originalBtn = submitBtn ? submitBtn.innerHTML : "";
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Envoi en cours…";
+      }
+
+      fetch(FORM_ENDPOINT, {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: new FormData(form),
+      })
+        .then(function (res) {
+          return res.json().catch(function () {
+            return {};
+          });
+        })
+        .then(function (data) {
+          var ok = data && (data.success === true || data.success === "true");
+          if (ok) {
+            if (success) success.classList.add("show");
+            form.reset();
+          } else {
+            if (errorBox) errorBox.classList.add("show");
+          }
+        })
+        .catch(function () {
+          if (errorBox) errorBox.classList.add("show");
+        })
+        .finally(function () {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtn;
+          }
+          setTimeout(function () {
+            if (success) success.classList.remove("show");
+            if (errorBox) errorBox.classList.remove("show");
+          }, 9000);
+        });
     });
   }
 

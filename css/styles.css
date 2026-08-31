@@ -1231,6 +1231,27 @@ h4 {
   width: 20px;
   height: 20px;
 }
+.form-error {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  background: #fdecec;
+  border: 1px solid #f3bcbc;
+  color: #b42318;
+  padding: 13px 16px;
+  border-radius: 12px;
+  margin-top: 16px;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+.form-error.show {
+  display: flex;
+}
+.form-error svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
 
 /* ==========================================================================
    CTA BAND
